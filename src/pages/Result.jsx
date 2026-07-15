@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { db } from "../firebase";
+import { ref, get, push, set, remove } from "firebase/database";
 
 export default function Result() {
   const [marketName, setMarketName] = useState("");
@@ -16,11 +18,6 @@ export default function Result() {
   const [editId, setEditId] = useState(null);
   const [error, setError] = useState("");
 
-  const BASE_URL =
-    "https://admin-panel-d7b0e-default-rtdb.firebaseio.com/results";
-  const MARKET_URL =
-    "https://admin-panel-d7b0e-default-rtdb.firebaseio.com/markets";
-
   const getTodayDate = () => {
     const today = new Date();
     const yyyy = today.getFullYear();
@@ -30,24 +27,32 @@ export default function Result() {
   };
 
   const fetchResults = async () => {
-    const res = await fetch(`${BASE_URL}.json`);
-    const data = await res.json();
-    if (data) {
-      const list = Object.keys(data).map((id) => ({ id, ...data[id] }));
-      setResults(list);
-    } else {
-      setResults([]);
+    try {
+      const snapshot = await get(ref(db, "results"));
+      const data = snapshot.val();
+      if (data) {
+        const list = Object.keys(data).map((id) => ({ id, ...data[id] }));
+        setResults(list);
+      } else {
+        setResults([]);
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
   const fetchMarkets = async () => {
-    const res = await fetch(`${MARKET_URL}.json`);
-    const data = await res.json();
-    if (data) {
-      const list = Object.keys(data).map((id) => ({ id, ...data[id] }));
-      setMarkets(list);
-    } else {
-      setMarkets([]);
+    try {
+      const snapshot = await get(ref(db, "markets"));
+      const data = snapshot.val();
+      if (data) {
+        const list = Object.keys(data).map((id) => ({ id, ...data[id] }));
+        setMarkets(list);
+      } else {
+        setMarkets([]);
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -73,28 +78,24 @@ export default function Result() {
 
     const resultData = { marketName, resultNumber, date, status };
 
-    if (editId) {
-      await fetch(`${BASE_URL}/${editId}.json`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(resultData),
-      });
-      alert("Result Updated ✅");
-      setEditId(null);
-    } else {
-      await fetch(`${BASE_URL}.json`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(resultData),
-      });
-      alert("Result Saved ✅");
-    }
+    try {
+      if (editId) {
+        await set(ref(db, `results/${editId}`), resultData);
+        alert("Result Updated ✅");
+        setEditId(null);
+      } else {
+        await push(ref(db, "results"), resultData);
+        alert("Result Saved ✅");
+      }
 
-    setMarketName("");
-    setResultNumber("");
-    setDate(getTodayDate());
-    setStatus("Active");
-    fetchResults();
+      setMarketName("");
+      setResultNumber("");
+      setDate(getTodayDate());
+      setStatus("Active");
+      fetchResults();
+    } catch (err) {
+      alert("Error: " + err.message);
+    }
   };
 
   const editResult = (item) => {
@@ -107,8 +108,12 @@ export default function Result() {
   };
 
   const deleteResult = async (id) => {
-    await fetch(`${BASE_URL}/${id}.json`, { method: "DELETE" });
-    fetchResults();
+    try {
+      await remove(ref(db, `results/${id}`));
+      fetchResults();
+    } catch (err) {
+      alert("Error: " + err.message);
+    }
   };
 
   useEffect(() => {

@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { db } from "../firebase";
+import { ref, get, update, remove } from "firebase/database";
 
 export default function MarketList() {
   const [markets, setMarkets] = useState([]);
@@ -12,26 +14,25 @@ export default function MarketList() {
   const [status, setStatus] = useState("Active");
   const [searchTerm, setSearchTerm] = useState("");
 
-  const BASE_URL =
-    "https://admin-panel-d7b0e-default-rtdb.firebaseio.com/markets";
-
   const fetchMarkets = async () => {
     setLoading(true);
-
-    const res = await fetch(`${BASE_URL}.json`);
-    const data = await res.json();
-
-    if (data) {
-      const list = Object.keys(data).map((id) => ({
-        id,
-        ...data[id],
-      }));
-      setMarkets(list);
-    } else {
-      setMarkets([]);
+    try {
+      const snapshot = await get(ref(db, "markets"));
+      const data = snapshot.val();
+      if (data) {
+        const list = Object.keys(data).map((id) => ({
+          id,
+          ...data[id],
+        }));
+        setMarkets(list);
+      } else {
+        setMarkets([]);
+      }
+    } catch (error) {
+      console.error("Fetch markets error:", error);
+    } finally {
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   const editMarket = (item) => {
@@ -51,12 +52,8 @@ export default function MarketList() {
     if (!confirmDelete) return;
 
     try {
-      await fetch(`${BASE_URL}/${id}.json`, {
-        method: "DELETE",
-      });
-
+      await remove(ref(db, `markets/${id}`));
       alert("Market Deleted ✅");
-
       fetchMarkets();
     } catch (error) {
       alert("Delete Failed");
@@ -68,18 +65,12 @@ export default function MarketList() {
     setUpdating(true);
 
     try {
-      await fetch(`${BASE_URL}/${editId}.json`, {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          marketName,
-          openTime,
-          closeTime,
-          resultTime,
-          status,
-        }),
+      await update(ref(db, `markets/${editId}`), {
+        marketName,
+        openTime,
+        closeTime,
+        resultTime,
+        status,
       });
 
       alert("Market Updated ✅");

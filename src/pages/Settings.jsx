@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { updatePassword } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
+import { ref, get, set } from "firebase/database";
 
 export default function Settings({ darkMode, setDarkMode }) {
   const [adminName, setAdminName] = useState("");
@@ -10,13 +11,10 @@ export default function Settings({ darkMode, setDarkMode }) {
   const [notifications, setNotifications] = useState(false);
   const [autoBackup, setAutoBackup] = useState(false);
 
-  const API_URL =
-    "https://admin-panel-d7b0e-default-rtdb.firebaseio.com/settings/admin.json";
-
   const fetchSettings = async () => {
     try {
-      const res = await fetch(API_URL);
-      const data = await res.json();
+      const snapshot = await get(ref(db, "settings/admin"));
+      const data = snapshot.val();
 
       if (data) {
         setAdminName(data.adminName || "");
@@ -35,16 +33,12 @@ export default function Settings({ darkMode, setDarkMode }) {
 
   const saveSettings = async () => {
     try {
-      await fetch(API_URL, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          adminName,
-          email,
-          darkMode,
-          notifications,
-          autoBackup,
-        }),
+      await set(ref(db, "settings/admin"), {
+        adminName,
+        email,
+        darkMode,
+        notifications,
+        autoBackup,
       });
 
       localStorage.setItem("darkMode", darkMode ? "true" : "false");

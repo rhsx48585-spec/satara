@@ -1,4 +1,6 @@
 import { useEffect, useState } from "react";
+import { db } from "../firebase";
+import { ref, get, push, set, remove } from "firebase/database";
 
 export default function Chart() {
   const [marketName, setMarketName] = useState("");
@@ -17,21 +19,22 @@ export default function Chart() {
   // 🔍 Quick search box (above table)
   const [searchTerm, setSearchTerm] = useState("");
 
-  const BASE_URL =
-    "https://admin-panel-d7b0e-default-rtdb.firebaseio.com/charts";
-
   const fetchCharts = async () => {
-    const res = await fetch(`${BASE_URL}.json`);
-    const data = await res.json();
+    try {
+      const snapshot = await get(ref(db, "charts"));
+      const data = snapshot.val();
 
-    if (data) {
-      const list = Object.keys(data).map((id) => ({
-        id,
-        ...data[id],
-      }));
-      setCharts(list);
-    } else {
-      setCharts([]);
+      if (data) {
+        const list = Object.keys(data).map((id) => ({
+          id,
+          ...data[id],
+        }));
+        setCharts(list);
+      } else {
+        setCharts([]);
+      }
+    } catch (err) {
+      console.error(err);
     }
   };
 
@@ -43,30 +46,24 @@ export default function Chart() {
 
     const chartData = { marketName, number, date, status };
 
-    if (editId) {
-      await fetch(`${BASE_URL}/${editId}.json`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(chartData),
-      });
+    try {
+      if (editId) {
+        await set(ref(db, `charts/${editId}`), chartData);
+        alert("Chart Updated ✅");
+        setEditId(null);
+      } else {
+        await push(ref(db, "charts"), chartData);
+        alert("Chart Saved ✅");
+      }
 
-      alert("Chart Updated ✅");
-      setEditId(null);
-    } else {
-      await fetch(`${BASE_URL}.json`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(chartData),
-      });
-
-      alert("Chart Saved ✅");
+      setMarketName("");
+      setNumber("");
+      setDate("");
+      setStatus("Active");
+      fetchCharts();
+    } catch (err) {
+      alert("Error: " + err.message);
     }
-
-    setMarketName("");
-    setNumber("");
-    setDate("");
-    setStatus("Active");
-    fetchCharts();
   };
 
   const editChart = (item) => {
@@ -78,11 +75,12 @@ export default function Chart() {
   };
 
   const deleteChart = async (id) => {
-    await fetch(`${BASE_URL}/${id}.json`, {
-      method: "DELETE",
-    });
-
-    fetchCharts();
+    try {
+      await remove(ref(db, `charts/${id}`));
+      fetchCharts();
+    } catch (err) {
+      alert("Error: " + err.message);
+    }
   };
 
   useEffect(() => {

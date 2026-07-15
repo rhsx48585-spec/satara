@@ -5,7 +5,8 @@ import Chart from "./Chart";
 import Result from "./Result";
 import Settings from "./Settings";
 import { signOut } from "firebase/auth";
-import { auth } from "../firebase";
+import { auth, db } from "../firebase";
+import { ref, get } from "firebase/database";
 
 export default function Dashboard({ onLogout }) {
   const [page, setPage] = useState("dashboard");
@@ -18,23 +19,23 @@ export default function Dashboard({ onLogout }) {
   });
 
   const fetchCounts = async () => {
-    const base = "https://admin-panel-d7b0e-default-rtdb.firebaseio.com";
+    try {
+      const marketsSnap = await get(ref(db, "markets"));
+      const chartsSnap = await get(ref(db, "charts"));
+      const resultsSnap = await get(ref(db, "results"));
 
-    const markets = await fetch(`${base}/markets.json`).then((res) =>
-      res.json()
-    );
-    const charts = await fetch(`${base}/charts.json`).then((res) =>
-      res.json()
-    );
-    const results = await fetch(`${base}/results.json`).then((res) =>
-      res.json()
-    );
+      const markets = marketsSnap.val();
+      const charts = chartsSnap.val();
+      const results = resultsSnap.val();
 
-    setCounts({
-      markets: markets ? Object.keys(markets).length : 0,
-      charts: charts ? Object.keys(charts).length : 0,
-      results: results ? Object.keys(results).length : 0,
-    });
+      setCounts({
+        markets: markets ? Object.keys(markets).length : 0,
+        charts: charts ? Object.keys(charts).length : 0,
+        results: results ? Object.keys(results).length : 0,
+      });
+    } catch (error) {
+      console.error("Fetch counts error:", error);
+    }
   };
 
   useEffect(() => {
@@ -69,7 +70,7 @@ export default function Dashboard({ onLogout }) {
 
       {/* ── Sidebar ── */}
       <div className={`sidebar ${sidebarOpen ? "open" : ""}`}>
-        <h2>ADMIN PANEL</h2>
+        <h2>TATA</h2>
         <ul>
           <li className={page === "dashboard"   ? "active" : ""} onClick={() => navigate("dashboard")}>🏠 Dashboard</li>
           <li className={page === "market"      ? "active" : ""} onClick={() => navigate("market")}>📈 Market</li>

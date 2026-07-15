@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { db } from "../firebase";
+import { ref, push } from "firebase/database";
 
 export default function Market() {
 const [marketName, setMarketName] = useState("");
@@ -16,28 +18,14 @@ const addMarket = async () => {
   setLoading(true);
 
   try {
-    const res = await fetch(
-      "https://admin-panel-d7b0e-default-rtdb.firebaseio.com/markets.json",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          marketName,
-          openTime,
-          closeTime,
-          resultTime,
-          status,
-          createdAt: new Date().toISOString(),
-        }),
-      }
-    );
-
-    const data = await res.json();
-
-    if (!res.ok) {
-      alert("Firebase Error: " + JSON.stringify(data));
-      return;
-    }
+    await push(ref(db, "markets"), {
+      marketName,
+      openTime,
+      closeTime,
+      resultTime,
+      status,
+      createdAt: new Date().toISOString(),
+    });
 
     alert("Market Added Successfully ✅");
 
@@ -47,7 +35,7 @@ const addMarket = async () => {
     setStatus("Active");
     setResultTime("");
   } catch (error) {
-    alert("Network Error: " + error.message);
+    alert("Error: " + error.message);
   } finally {
     setLoading(false);
   }

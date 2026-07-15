@@ -148,7 +148,7 @@ export default function Login({ onLogin }) {
         </button>
 
         <div className="login-footer">
-          © 2026 Admin Panel
+          © 2026 TATA
         </div>
       </form>
     </div>
