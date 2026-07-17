@@ -24,7 +24,7 @@ export default function ChartsView() {
               id,
               ...chartsData[id],
             }))
-            .filter((item) => item.marketName === decodedMarketName && item.status === "Active");
+            .filter((item) => item.marketName === decodedMarketName && (item.status === "Active" || !item.status));
         }
 
         // If no charts are found, fall back to results for this market
@@ -38,7 +38,7 @@ export default function ChartsView() {
                 ...resultsData[id],
                 number: resultsData[id].resultNumber, // map resultNumber to number
               }))
-              .filter((item) => item.marketName === decodedMarketName && item.status === "Active");
+              .filter((item) => item.marketName === decodedMarketName && (item.status === "Active" || !item.status));
           }
         }
 

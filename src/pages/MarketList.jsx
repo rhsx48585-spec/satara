@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
-import { ref, get, update, remove } from "firebase/database";
+import { ref, onValue, update, remove } from "firebase/database";
 
 export default function MarketList() {
   const [markets, setMarkets] = useState([]);
@@ -13,27 +13,6 @@ export default function MarketList() {
   const [resultTime, setResultTime] = useState("");
   const [status, setStatus] = useState("Active");
   const [searchTerm, setSearchTerm] = useState("");
-
-  const fetchMarkets = async () => {
-    setLoading(true);
-    try {
-      const snapshot = await get(ref(db, "markets"));
-      const data = snapshot.val();
-      if (data) {
-        const list = Object.keys(data).map((id) => ({
-          id,
-          ...data[id],
-        }));
-        setMarkets(list);
-      } else {
-        setMarkets([]);
-      }
-    } catch (error) {
-      console.error("Fetch markets error:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const editMarket = (item) => {
     setEditId(item.id);
@@ -54,7 +33,6 @@ export default function MarketList() {
     try {
       await remove(ref(db, `markets/${id}`));
       alert("Market Deleted ✅");
-      fetchMarkets();
     } catch (error) {
       alert("Delete Failed");
       console.log(error);
@@ -81,8 +59,6 @@ export default function MarketList() {
       setCloseTime("");
       setResultTime("");
       setStatus("Active");
-
-      fetchMarkets();
     } catch (error) {
       alert("Update Failed");
       console.log(error);
@@ -92,7 +68,24 @@ export default function MarketList() {
   };
 
   useEffect(() => {
-    fetchMarkets();
+    setLoading(true);
+    const unsubscribe = onValue(ref(db, "markets"), (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const list = Object.keys(data).map((id) => ({
+          id,
+          ...data[id],
+        }));
+        setMarkets(list);
+      } else {
+        setMarkets([]);
+      }
+      setLoading(false);
+    }, (error) => {
+      console.error("Fetch markets error:", error);
+      setLoading(false);
+    });
+    return () => unsubscribe();
   }, []);
 
   // 🔍 Filtered list based on search term

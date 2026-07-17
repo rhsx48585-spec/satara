@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { db } from "../firebase";
-import { ref, get } from "firebase/database";
+import { ref, onValue } from "firebase/database";
 
 export default function Home() {
   const [markets, setMarkets] = useState([]);
@@ -10,53 +10,53 @@ export default function Home() {
   const [searchTerm, setSearchTerm] = useState("");
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setLoading(true);
-        // Fetch Markets
-        const marketsSnap = await get(ref(db, "markets"));
-        const marketsData = marketsSnap.val();
-        
-        // Fetch Results
-        const resultsSnap = await get(ref(db, "results"));
-        const resultsData = resultsSnap.val();
+    setLoading(true);
 
-        // Process Markets
-        let marketsList = [];
-        if (marketsData) {
-          marketsList = Object.keys(marketsData).map((id) => ({
-            id,
-            ...marketsData[id],
-          }));
-        }
-        setMarkets(marketsList);
-
-        // Process Results (Get the latest result per market name)
-        const latestResults = {};
-        if (resultsData) {
-          const allResults = Object.keys(resultsData).map((id) => ({
-            id,
-            ...resultsData[id],
-          }));
-          
-          // Sort results by date descending so the first one we find is the latest
-          allResults.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-          allResults.forEach((res) => {
-            if (!latestResults[res.marketName]) {
-              latestResults[res.marketName] = res;
-            }
-          });
-        }
-        setResults(latestResults);
-      } catch (error) {
-        console.error("Error fetching homepage data:", error);
-      } finally {
-        setLoading(false);
+    // Listen to Markets in real-time
+    const unsubscribeMarkets = onValue(ref(db, "markets"), (snapshot) => {
+      const data = snapshot.val();
+      let marketsList = [];
+      if (data) {
+        marketsList = Object.keys(data).map((id) => ({
+          id,
+          ...data[id],
+        }));
       }
-    };
+      setMarkets(marketsList);
+      setLoading(false);
+    }, (error) => {
+      console.error("Error listening to markets:", error);
+      setLoading(false);
+    });
 
-    fetchData();
+    // Listen to Results in real-time
+    const unsubscribeResults = onValue(ref(db, "results"), (snapshot) => {
+      const data = snapshot.val();
+      const latestResults = {};
+      if (data) {
+        const allResults = Object.keys(data).map((id) => ({
+          id,
+          ...data[id],
+        }));
+        
+        // Sort results by date descending so the first one we find is the latest
+        allResults.sort((a, b) => new Date(b.date) - new Date(a.date));
+
+        allResults.forEach((res) => {
+          if (!latestResults[res.marketName]) {
+            latestResults[res.marketName] = res;
+          }
+        });
+      }
+      setResults(latestResults);
+    }, (error) => {
+      console.error("Error listening to results:", error);
+    });
+
+    return () => {
+      unsubscribeMarkets();
+      unsubscribeResults();
+    };
   }, []);
 
   // Filter active markets

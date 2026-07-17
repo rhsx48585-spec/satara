@@ -7,6 +7,8 @@ import Dashboard from "./pages/Dashboard";
 import PublicLayout from "./public/PublicLayout";
 import Home from "./public/Home";
 import ChartsView from "./public/ChartsView";
+import UserAuth from "./public/UserAuth";
+import UserDashboard from "./public/UserDashboard";
 
 function App() {
   const [user, setUser] = useState(null);
@@ -40,16 +42,50 @@ function App() {
         <Route path="/" element={<PublicLayout />}>
           <Route index element={<Home />} />
           <Route path="charts/:marketName" element={<ChartsView />} />
+          
+          <Route
+            path="login"
+            element={
+              user ? (
+                user.email === "rhsx48585@gmail.com" ? (
+                  <Navigate to="/admin" replace />
+                ) : (
+                  <Navigate to="/dashboard" replace />
+                )
+              ) : (
+                <UserAuth />
+              )
+            }
+          />
+          
+          <Route
+            path="dashboard"
+            element={
+              user ? (
+                user.email === "rhsx48585@gmail.com" ? (
+                  <Navigate to="/admin" replace />
+                ) : (
+                  <UserDashboard />
+                )
+              ) : (
+                <Navigate to="/login" replace />
+              )
+            }
+          />
         </Route>
 
         {/* ── Admin Panel Route ── */}
         <Route
           path="/admin"
           element={
-            user ? (
+            user && user.email === "rhsx48585@gmail.com" ? (
               <Dashboard onLogout={() => setUser(null)} />
             ) : (
-              <Login onLogin={() => setUser({})} />
+              user ? (
+                <Navigate to="/dashboard" replace />
+              ) : (
+                <Login onLogin={() => setUser({})} />
+              )
             )
           }
         />

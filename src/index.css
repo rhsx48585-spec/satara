@@ -862,15 +862,75 @@
       flex-shrink: 0;
     }
   
-    .market-table td[data-label="Action"] { flex-direction: column; align-items: stretch; gap: 8px; }
-    .market-table td[data-label="Action"]::before { margin-bottom: 4px; }
+    .market-table td[data-label="Action"],
+    .market-table td[data-label="Actions"] { flex-direction: column; align-items: stretch; gap: 8px; }
+    .market-table td[data-label="Action"]::before,
+    .market-table td[data-label="Actions"]::before { margin-bottom: 4px; }
   
     .market-table td[data-label="Action"] .edit-btn,
     .market-table td[data-label="Action"] .delete-btn,
+    .market-table td[data-label="Actions"] .edit-btn,
+    .market-table td[data-label="Actions"] .delete-btn,
     .market-table td.action-buttons .edit-btn,
     .market-table td.action-buttons .delete-btn {
       width: 100%;
       margin-right: 0;
       text-align: center;
+    }
+  }
+
+  /* ── Admin Support Chat Responsive Styles ── */
+  .admin-chat-container {
+    display: flex;
+    gap: 20px;
+    height: calc(100vh - 160px);
+    min-height: 500px;
+  }
+  .admin-chat-sidebar {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    flex-shrink: 0;
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+  .admin-chat-main {
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    padding: 16px;
+    background: var(--card-bg);
+    border-radius: 12px;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+
+  @media (max-width: 768px) {
+    .admin-chat-container {
+      flex-direction: column;
+      height: auto;
+      min-height: 450px;
+      gap: 10px;
+    }
+    .admin-chat-sidebar, .admin-chat-main {
+      width: 100%;
+    }
+    .hide-mobile {
+      display: none !important;
+    }
+  }
+
+  /* ── Extreme Mobile Screens (e.g. 320px) ── */
+  @media (max-width: 580px) {
+    .market-table td {
+      flex-direction: column !important;
+      align-items: flex-start !important;
+      text-align: left !important;
+      gap: 4px !important;
+      padding: 10px 0 !important;
+    }
+    .market-table td::before {
+      margin-bottom: 2px !important;
     }
   }

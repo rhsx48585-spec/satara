@@ -113,22 +113,27 @@ body {
 }
 
 .nav-btn {
-  background: linear-gradient(135deg, var(--glow-violet), var(--glow-pink));
+  background: linear-gradient(135deg, rgba(0, 242, 254, 0.15), rgba(236, 56, 188, 0.15));
   color: var(--text-primary);
-  border: none;
-  padding: 10px 20px;
-  border-radius: 30px;
+  border: 1px solid rgba(0, 242, 254, 0.4);
+  padding: 8px 18px;
+  border-radius: 20px;
   font-weight: 600;
   cursor: pointer;
   text-decoration: none;
   font-size: 14px;
-  transition: transform 0.3s ease, box-shadow 0.3s ease;
-  box-shadow: 0 4px 15px rgba(236, 56, 188, 0.3);
+  transition: all 0.3s ease;
+  box-shadow: 0 0 10px rgba(0, 242, 254, 0.2);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
 }
 
 .nav-btn:hover {
+  background: linear-gradient(135deg, rgba(0, 242, 254, 0.35), rgba(236, 56, 188, 0.35));
+  border-color: rgba(236, 56, 188, 0.8);
   transform: translateY(-2px);
-  box-shadow: 0 8px 25px rgba(236, 56, 188, 0.5);
+  box-shadow: 0 0 15px rgba(236, 56, 188, 0.4);
 }
 
 /* ── Hero Section ── */
@@ -457,6 +462,328 @@ body {
   to { transform: rotate(360deg); }
 }
 
+/* ── Logout Button in Navbar ── */
+.nav-logout-btn {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.15), rgba(185, 28, 28, 0.15));
+  color: #fff;
+  border: 1px solid rgba(239, 68, 68, 0.5);
+  padding: 8px 18px;
+  border-radius: 20px;
+  font-weight: 600;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(239, 68, 68, 0.2);
+  transition: all 0.3s ease;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+}
+
+.nav-logout-btn:hover {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.35), rgba(185, 28, 28, 0.35));
+  border-color: rgba(239, 68, 68, 0.8);
+  transform: translateY(-2px);
+  box-shadow: 0 0 15px rgba(239, 68, 68, 0.4);
+}
+
+/* ── User Auth Styling ── */
+.auth-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 250px);
+  padding: 20px;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 450px;
+  background: var(--panel-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--panel-border);
+  border-radius: 24px;
+  padding: 40px;
+  box-shadow: var(--neon-glow-pink);
+  text-align: center;
+}
+
+.auth-card h2 {
+  font-size: 28px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 8px;
+}
+
+.auth-subtitle {
+  color: var(--text-secondary);
+  font-size: 14px;
+  margin-bottom: 25px;
+}
+
+.auth-error-msg {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+  padding: 12px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  margin-bottom: 20px;
+  text-align: left;
+}
+
+.auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  text-align: left;
+}
+
+.auth-submit-btn {
+  background: var(--btn-gradient);
+  color: #fff;
+  border: none;
+  padding: 14px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: var(--btn-glow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  margin-top: 10px;
+}
+
+.auth-submit-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 0 20px rgba(236, 56, 188, 0.6);
+}
+
+.auth-submit-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none;
+}
+
+.auth-toggle {
+  margin-top: 25px;
+  font-size: 14px;
+  color: var(--text-secondary);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 8px;
+}
+
+.auth-toggle button {
+  background: none;
+  border: none;
+  color: var(--glow-cyan);
+  font-weight: 700;
+  cursor: pointer;
+  font-size: 14px;
+  padding: 0;
+  text-decoration: underline;
+}
+
+/* ── User Dashboard Styling ── */
+.user-dashboard-hero {
+  margin-bottom: 30px;
+}
+
+.user-card-glass {
+  background: linear-gradient(135deg, rgba(255, 255, 255, 0.03) 0%, rgba(255, 255, 255, 0.01) 100%);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--panel-border);
+  border-radius: 24px;
+  padding: 30px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+}
+
+.user-profile-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 20px;
+}
+
+.user-profile-header h2 {
+  font-size: 26px;
+  font-weight: 700;
+  color: #fff;
+  margin-bottom: 5px;
+}
+
+.user-profile-header p {
+  color: var(--text-secondary);
+  font-size: 14px;
+}
+
+.wallet-badge {
+  display: flex;
+  flex-direction: column;
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  padding: 15px 30px;
+  border-radius: 16px;
+  text-align: right;
+  box-shadow: 0 0 15px rgba(16, 185, 129, 0.2);
+}
+
+.wallet-title {
+  font-size: 12px;
+  color: rgba(16, 185, 129, 0.8);
+  text-transform: uppercase;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+.wallet-amount {
+  font-size: 28px;
+  font-weight: 800;
+  color: #10b981;
+}
+
+.dashboard-tabs {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 25px;
+}
+
+.tab-btn-glow {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--panel-border);
+  color: var(--text-secondary);
+  padding: 12px 24px;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.tab-btn-glow:hover {
+  background: rgba(255, 255, 255, 0.05);
+  color: #fff;
+  border-color: rgba(255, 255, 255, 0.2);
+}
+
+.tab-btn-glow.active {
+  background: var(--btn-gradient);
+  border-color: transparent;
+  color: #fff;
+  box-shadow: var(--btn-glow);
+}
+
+/* ── Deposit Form & QR Grid ── */
+.glass-panel {
+  background: var(--panel-bg);
+  backdrop-filter: blur(15px);
+  -webkit-backdrop-filter: blur(15px);
+  border: 1px solid var(--panel-border);
+  border-radius: 24px;
+  padding: 35px;
+}
+
+.deposit-grid {
+  display: grid;
+  grid-template-columns: 1.2fr 1.5fr;
+  gap: 40px;
+}
+
+.deposit-qr-section {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border-right: 1px solid var(--panel-border);
+  padding-right: 40px;
+}
+
+.qr-wrapper {
+  background: #fff;
+  padding: 15px;
+  border-radius: 16px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 20px;
+  box-shadow: 0 0 20px rgba(0, 242, 254, 0.15);
+}
+
+.payment-qr-img {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  display: block;
+}
+
+.upi-details-box {
+  background: rgba(255, 255, 255, 0.02);
+  border: 1px solid var(--panel-border);
+  padding: 10px 20px;
+  border-radius: 10px;
+  display: flex;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.upi-label {
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.upi-id {
+  color: var(--glow-cyan);
+  font-weight: 700;
+}
+
+.deposit-form-section {
+  display: flex;
+  flex-direction: column;
+}
+
+.sim-mode-notice {
+  background: rgba(0, 242, 254, 0.05);
+  border: 1px solid rgba(0, 242, 254, 0.15);
+  color: var(--glow-cyan);
+  padding: 15px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.5;
+  margin-top: 25px;
+}
+
+/* ── Badges ── */
+.status-badge {
+  display: inline-block;
+  padding: 6px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+}
+
+.status-badge.pending {
+  background: rgba(234, 179, 8, 0.1);
+  border: 1px solid rgba(234, 179, 8, 0.2);
+  color: #eab308;
+}
+
+.status-badge.approved {
+  background: rgba(16, 185, 129, 0.1);
+  border: 1px solid rgba(16, 185, 129, 0.2);
+  color: #10b981;
+}
+
+.status-badge.rejected {
+  background: rgba(239, 68, 68, 0.1);
+  border: 1px solid rgba(239, 68, 68, 0.2);
+  color: #ef4444;
+}
+
 /* ── Responsive ── */
 @media (max-width: 768px) {
   .hero h1 {
@@ -471,10 +798,11 @@ body {
   }
   .nav-links {
     display: flex;
-    gap: 15px;
+    gap: 12px;
     width: 100%;
     justify-content: center;
     padding: 0;
+    flex-wrap: wrap;
   }
   .live-results-grid {
     grid-template-columns: 1fr;
@@ -521,5 +849,93 @@ body {
   .public-table td .table-btn {
     width: 100%;
     text-align: center;
+  }
+  
+  /* User Dashboard Mobile Adaptations */
+  .user-profile-header {
+    flex-direction: column;
+    text-align: center;
+  }
+  .wallet-badge {
+    width: 100%;
+    text-align: center;
+    padding: 10px 0;
+  }
+  .dashboard-tabs {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 8px;
+    width: 100%;
+    margin-bottom: 15px;
+  }
+  .dashboard-tabs::-webkit-scrollbar {
+    display: none;
+  }
+  .tab-btn-glow {
+    width: 100%;
+    text-align: center;
+    padding: 10px 8px;
+    font-size: 12px;
+    white-space: normal;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+  .deposit-grid {
+    grid-template-columns: 1fr;
+    gap: 30px;
+  }
+  .deposit-qr-section {
+    border-right: none;
+    border-bottom: 1px solid var(--panel-border);
+    padding-right: 0;
+    padding-bottom: 30px;
+  }
+}
+
+/* ── Extreme Mobile Screens (e.g. 320px) ── */
+@media (max-width: 480px) {
+  .hero h1 {
+    font-size: 26px !important;
+  }
+  .glass-panel,
+  .user-card-glass,
+  .market-table-card,
+  .chart-card {
+    padding: 15px !important;
+    border-radius: 16px !important;
+  }
+  .auth-card {
+    padding: 20px 15px !important;
+    border-radius: 16px !important;
+  }
+  .auth-card h2 {
+    font-size: 22px;
+  }
+  
+  .public-table td {
+    flex-direction: column;
+    align-items: flex-start;
+    text-align: left;
+    gap: 4px;
+    padding: 10px 0;
+  }
+  .public-table td::before {
+    text-align: left;
+    margin-bottom: 2px;
+  }
+  .public-table td .table-actions {
+    justify-content: flex-start;
+  }
+  .payment-qr-img {
+    max-width: 150px !important;
+  }
+  .upi-details-box {
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11px;
+    padding: 8px 12px;
+    word-break: break-all;
   }
 }

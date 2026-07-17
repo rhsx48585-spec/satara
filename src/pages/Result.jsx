@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { db } from "../firebase";
-import { ref, get, push, set, remove } from "firebase/database";
+import { ref, onValue, push, set, remove } from "firebase/database";
 
 export default function Result() {
   const [marketName, setMarketName] = useState("");
@@ -24,36 +24,6 @@ export default function Result() {
     const mm = String(today.getMonth() + 1).padStart(2, "0");
     const dd = String(today.getDate()).padStart(2, "0");
     return `${yyyy}-${mm}-${dd}`;
-  };
-
-  const fetchResults = async () => {
-    try {
-      const snapshot = await get(ref(db, "results"));
-      const data = snapshot.val();
-      if (data) {
-        const list = Object.keys(data).map((id) => ({ id, ...data[id] }));
-        setResults(list);
-      } else {
-        setResults([]);
-      }
-    } catch (err) {
-      console.error(err);
-    }
-  };
-
-  const fetchMarkets = async () => {
-    try {
-      const snapshot = await get(ref(db, "markets"));
-      const data = snapshot.val();
-      if (data) {
-        const list = Object.keys(data).map((id) => ({ id, ...data[id] }));
-        setMarkets(list);
-      } else {
-        setMarkets([]);
-      }
-    } catch (err) {
-      console.error(err);
-    }
   };
 
   const saveResult = async () => {
@@ -92,7 +62,6 @@ export default function Result() {
       setResultNumber("");
       setDate(getTodayDate());
       setStatus("Active");
-      fetchResults();
     } catch (err) {
       alert("Error: " + err.message);
     }
@@ -110,15 +79,40 @@ export default function Result() {
   const deleteResult = async (id) => {
     try {
       await remove(ref(db, `results/${id}`));
-      fetchResults();
     } catch (err) {
       alert("Error: " + err.message);
     }
   };
 
   useEffect(() => {
-    fetchResults();
-    fetchMarkets();
+    const unsubscribeResults = onValue(ref(db, "results"), (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const list = Object.keys(data).map((id) => ({ id, ...data[id] }));
+        setResults(list);
+      } else {
+        setResults([]);
+      }
+    }, (err) => {
+      console.error(err);
+    });
+
+    const unsubscribeMarkets = onValue(ref(db, "markets"), (snapshot) => {
+      const data = snapshot.val();
+      if (data) {
+        const list = Object.keys(data).map((id) => ({ id, ...data[id] }));
+        setMarkets(list);
+      } else {
+        setMarkets([]);
+      }
+    }, (err) => {
+      console.error(err);
+    });
+
+    return () => {
+      unsubscribeResults();
+      unsubscribeMarkets();
+    };
   }, []);
 
   const todayResults = results.filter((item) => item.date === getTodayDate());
